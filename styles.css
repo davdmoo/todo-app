@@ -1,0 +1,147 @@
+:root {
+  color-scheme: light dark;
+  --primary-bright-blue: hsl(220, 98%, 61%);
+  --light-background: hsl(0, 0%, 98%);
+  --dark-background: hsl(235, 21%, 11%);
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+p {
+  font-size: 16px;
+}
+
+body {
+  position: relative;
+  font-family: "Josefin Sans";
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 32px;
+  padding-bottom: 32px;
+  background-color: light-dark(var(--light-background), var(--dark-background));
+}
+
+main {
+  width: 100%;
+}
+
+#input-todo {
+  width: 100%;
+  padding: 24px;
+  background-color: hsl(235, 24%, 19%);
+  border: none;
+  font-family: "Josefin Sans";
+  font-size: 16px;
+  border-radius: 6px;
+  margin-top: 32px;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+}
+
+ul .todo-item:first-child {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+ul .todo-item:last-child {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+ul .todo-item:not(:last-child) {
+  border-bottom: solid 1px hsl(234, 11%, 52%);
+}
+
+.todo-item {
+  padding: 24px;
+  background-color: hsl(235, 24%, 19%);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.checked-todo-item {
+  text-decoration: line-through;
+}
+
+.todo-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checked-circle {
+  background: linear-gradient(hsl(192, 100%, 67%), hsl(280, 87%, 65%));
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  border: solid 1px white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.unchecked-circle {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  border: solid 1px white;
+  margin-right: 12px;
+}
+
+.delete-todo-button {
+  cursor: pointer;
+}
+
+header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.filter {
+  display: flex;
+  flex-direction: row;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.filter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 24px;
+  background-color: hsl(235, 24%, 19%);
+  margin-top: 16px;
+}
+
+footer {
+  position: absolute;
+  bottom: 8px;
+  font-size: 11px;
+  text-align: center;
+  font-family: "Josefin Sans", Arial, Helvetica, sans-serif;
+}
+
+footer a {
+  color: hsl(228, 45%, 44%);
+}
