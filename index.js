@@ -31,6 +31,12 @@ function removeTodo(id) {
   render();
 }
 
+
+function clearCompletedTodos() {
+  todos = todos.filter((todo) => todo.isCompleted == false);
+  render();
+}
+
 function render() {
   const parser = new DOMParser();
   const todoList = document.getElementById("todo-list");
@@ -93,10 +99,14 @@ function render() {
   }
 
   const todoCountIndicator = `<div class="todo-item">
-    <p id="todo-count-indicator">${todos.length} item(s) left</p>
-    <p>Clear Completed</p>
+    <p id="todo-count-indicator" class="greyed-out-text">${todos.length} item(s) left</p>
+    <p id="clear-completed-todos" class="greyed-out-text cursor-pointer">Clear Completed</p>
   </div>`;
-  todoList.appendChild(parser.parseFromString(todoCountIndicator, 'text/xml').firstChild);
+  const todoCountIndicatorElement = parser.parseFromString(todoCountIndicator, 'text/xml');
+  const clearCompletedTodosButton = todoCountIndicatorElement.getElementById("clear-completed-todos");
+  clearCompletedTodosButton.addEventListener("click", () => clearCompletedTodos());
+
+  todoList.appendChild(todoCountIndicatorElement.firstChild);
 }
 
 render();

@@ -73,6 +73,7 @@ ul .todo-item:not(:last-child) {
 
 .checked-todo-item {
   text-decoration: line-through;
+  color: hsl(234, 11%, 52%);
 }
 
 .todo-title {
@@ -107,6 +108,18 @@ ul .todo-item:not(:last-child) {
   cursor: pointer;
 }
 
+.greyed-out-text {
+  color: hsl(234, 11%, 52%);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+#clear-completed-todos:hover {
+  color: hsl(236, 33%, 92%);
+}
+
 header {
   display: flex;
   flex-direction: row;
@@ -117,6 +130,11 @@ header {
 .filter {
   display: flex;
   flex-direction: row;
+  border-radius: 6px;
+}
+
+.filter-item:hover {
+  color: hsl(236, 33%, 92%);
 }
 
 .item-info {
