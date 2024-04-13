@@ -1,4 +1,4 @@
-const todos = [
+let todos = [
   {
     id: 1,
     title: "Jog around the park 30x",
@@ -11,17 +11,43 @@ const todos = [
   }
 ];
 
-const parser = new DOMParser();
-const todoList = document.getElementById("todo-list");
-for (let i = 0; i < todos.length; ++i) {
-  const todo = todos[i];
-  const { id, title, isCompleted } = todo;
+function findTodoById(id) {
+  return todos.find((todo) => todo.id == id);
+}
 
-  const deleteTodoButton = `<svg
+function toggleTodo(id, value) {
+  const todo = findTodoById(id);
+  if (todo === undefined) return;
+  todo.isCompleted = value;
+
+  render();
+}
+
+function removeTodo(id) {
+  const todo = findTodoById(id);
+  if (todo === undefined) return;
+  todos = todos.filter((todo) => todo.id !== id);
+
+  render();
+}
+
+function render() {
+  const parser = new DOMParser();
+  const todoList = document.getElementById("todo-list");
+
+  // removes existing HTML in cases where we need to re-render
+  todoList.innerHTML = "";
+
+  for (let i = 0; i < todos.length; ++i) {
+    const todo = todos[i];
+    const { id, title, isCompleted } = todo;
+
+    const deleteTodoButton = `<svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"
             height="18"
             class="delete-todo-button"
+            onclick="removeTodo(${id})"
           >
             <path
               fill="#494C6B"
@@ -30,10 +56,10 @@ for (let i = 0; i < todos.length; ++i) {
             />
           </svg>`;
 
-  let element;
-  if (isCompleted) {
-    element = `<div class="todo-item" id="${id}">
-          <div class="todo-title">
+    let element;
+    if (isCompleted) {
+      element = `<div class="todo-item" id="${id}">
+          <div class="todo-title" id="todo-title-${id}">
             <div class="checked-circle">
               <svg xmlns="http://www.w3.org/2000/svg" width="11" height="9">
                 <path
@@ -48,21 +74,29 @@ for (let i = 0; i < todos.length; ++i) {
           </div>
           ${deleteTodoButton}
         </div>`;
-  } else {
-    element = `<div class="todo-item" id="${id}">
-          <div class="todo-title">
+    } else {
+      element = `<div class="todo-item" id="${id}">
+          <div class="todo-title" id="todo-title-${id}">
             <div class="unchecked-circle"></div>
             <p>${title}</p>
           </div>
           ${deleteTodoButton}
         </div>`;
+    }
+
+    const parsedElement = parser.parseFromString(element, 'text/xml');
+
+    // couldn't add onclick dynamically using JS string (couldn't figure out why)
+    const todoTitle = parsedElement.getElementById(`todo-title-${id}`);
+    todoTitle.addEventListener("click", () => toggleTodo(id, !isCompleted));
+    todoList.appendChild(parsedElement.firstChild);
   }
 
-  todoList.appendChild(parser.parseFromString(element, 'text/xml').firstChild);
+  const todoCountIndicator = `<div class="todo-item">
+    <p id="todo-count-indicator">${todos.length} item(s) left</p>
+    <p>Clear Completed</p>
+  </div>`;
+  todoList.appendChild(parser.parseFromString(todoCountIndicator, 'text/xml').firstChild);
 }
 
-const todoCountIndicator = `<div class="todo-item">
-  <p id="todo-count-indicator">${todos.length} item(s) left</p>
-  <p>Clear Completed</p>
-</div>`;
-todoList.appendChild(parser.parseFromString(todoCountIndicator, 'text/xml').firstChild);
+render();
