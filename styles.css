@@ -17,6 +17,7 @@ p {
 
 body {
   position: relative;
+  min-height: 100vh;
   font-family: "Josefin Sans";
   display: flex;
   flex-direction: column;

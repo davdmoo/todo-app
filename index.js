@@ -39,7 +39,7 @@ function clearCompletedTodos() {
 function createTodo(title) {
   const orderedTodos = todos.sort((a, b) => b.id > a.id);
 
-  const newId = orderedTodos[0].id + 1;
+  const newId = orderedTodos.length === 0 ? 1 : orderedTodos[0].id + 1;
   const newTodo = { id: newId, title: title, isCompleted: false };
   todos.push(newTodo);
 
