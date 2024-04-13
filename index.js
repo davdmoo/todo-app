@@ -26,16 +26,35 @@ function toggleTodo(id, value) {
 function removeTodo(id) {
   const todo = findTodoById(id);
   if (todo === undefined) return;
-  todos = todos.filter((todo) => todo.id !== id);
+  todos = [...todos.filter((todo) => todo.id !== id)];
 
   render();
 }
-
 
 function clearCompletedTodos() {
-  todos = todos.filter((todo) => todo.isCompleted == false);
+  todos = [...todos.filter((todo) => todo.isCompleted == false)];
   render();
 }
+
+function createTodo(title) {
+  const orderedTodos = todos.sort((a, b) => b.id > a.id);
+
+  const newId = orderedTodos[0].id + 1;
+  const newTodo = { id: newId, title: title, isCompleted: false };
+  todos.push(newTodo);
+
+  render();
+}
+
+const todoInput = document.getElementById("input-todo");
+todoInput.addEventListener("keydown", function (event) {
+  if (event.code !== "Enter") return;
+  if (todoInput.value === "") return;
+  if (todoInput.value.trim().length === 0) return;
+
+  createTodo(todoInput.value);
+  todoInput.value = "";
+});
 
 function render() {
   const parser = new DOMParser();
@@ -44,6 +63,14 @@ function render() {
   // removes existing HTML in cases where we need to re-render
   todoList.innerHTML = "";
 
+  todos = [...todos.sort((a, b) => {
+    // negative value means the first element (a) will be ordered first in the list
+    if (a.isCompleted !== b.isCompleted) {
+      return a.isCompleted ? -1 : 1;
+    }
+
+    return b.id - a.id;
+  })];
   for (let i = 0; i < todos.length; ++i) {
     const todo = todos[i];
     const { id, title, isCompleted } = todo;
