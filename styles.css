@@ -138,6 +138,10 @@ header {
   color: hsl(236, 33%, 92%);
 }
 
+.active-filter-item {
+  color: var(--primary-bright-blue);
+}
+
 .item-info {
   display: flex;
   flex-direction: row;

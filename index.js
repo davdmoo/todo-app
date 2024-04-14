@@ -1,4 +1,4 @@
-let todos = [
+let allTodos = [
   {
     id: 1,
     title: "Jog around the park 30x",
@@ -10,9 +10,13 @@ let todos = [
     isCompleted: true,
   }
 ];
+let todos = [...allTodos];
+
+const filters = ["All", "Active", "Completed"];
+let activeFilter = "All";
 
 function findTodoById(id) {
-  return todos.find((todo) => todo.id == id);
+  return allTodos.find((todo) => todo.id == id);
 }
 
 function toggleTodo(id, value) {
@@ -26,23 +30,31 @@ function toggleTodo(id, value) {
 function removeTodo(id) {
   const todo = findTodoById(id);
   if (todo === undefined) return;
-  todos = [...todos.filter((todo) => todo.id !== id)];
+  allTodos = [...allTodos.filter((todo) => todo.id !== id)];
 
   render();
 }
 
 function clearCompletedTodos() {
-  todos = [...todos.filter((todo) => todo.isCompleted == false)];
+  allTodos = [...allTodos.filter((todo) => todo.isCompleted == false)];
   render();
 }
 
 function createTodo(title) {
-  const orderedTodos = todos.sort((a, b) => b.id > a.id);
+  const orderedTodos = allTodos.sort((a, b) => b.id > a.id);
 
   const newId = orderedTodos.length === 0 ? 1 : orderedTodos[0].id + 1;
   const newTodo = { id: newId, title: title, isCompleted: false };
-  todos.push(newTodo);
+  allTodos.push(newTodo);
 
+  render();
+}
+
+function applyFilter(newFilter) {
+  if (!filters.includes(newFilter)) return;
+  if (activeFilter === newFilter) return;
+
+  activeFilter = newFilter;
   render();
 }
 
@@ -56,12 +68,29 @@ todoInput.addEventListener("keydown", function (event) {
   todoInput.value = "";
 });
 
+const parser = new DOMParser();
 function render() {
-  const parser = new DOMParser();
+  console.log("render");
   const todoList = document.getElementById("todo-list");
 
   // removes existing HTML in cases where we need to re-render
   todoList.innerHTML = "";
+
+  switch (activeFilter) {
+    case "Completed":
+      todos = [...allTodos.filter((todo) => {
+        return todo.isCompleted;
+      })];
+      break;
+    case "Active":
+      todos = [...allTodos.filter((todo) => {
+        return !todo.isCompleted;
+      })];
+      break;
+    default:
+      todos = [...allTodos];
+      break;
+  }
 
   todos = [...todos.sort((a, b) => {
     // negative value means the first element (a) will be ordered first in the list
@@ -71,6 +100,7 @@ function render() {
 
     return b.id - a.id;
   })];
+
   for (let i = 0; i < todos.length; ++i) {
     const todo = todos[i];
     const { id, title, isCompleted } = todo;
@@ -125,8 +155,9 @@ function render() {
     todoList.appendChild(parsedElement.firstChild);
   }
 
+  const activeTodosCount = [...allTodos.filter((todo) => !todo.isCompleted)].length;
   const todoCountIndicator = `<div class="todo-item">
-    <p id="todo-count-indicator" class="greyed-out-text">${todos.length} item(s) left</p>
+    <p id="todo-count-indicator" class="greyed-out-text">${activeTodosCount} item(s) left</p>
     <p id="clear-completed-todos" class="greyed-out-text cursor-pointer">Clear Completed</p>
   </div>`;
   const todoCountIndicatorElement = parser.parseFromString(todoCountIndicator, 'text/xml');
@@ -134,6 +165,22 @@ function render() {
   clearCompletedTodosButton.addEventListener("click", () => clearCompletedTodos());
 
   todoList.appendChild(todoCountIndicatorElement.firstChild);
+
+  const filtersElement = document.getElementById("filter");
+  filtersElement.innerHTML = "";
+  for (let i = 0; i < filters.length; ++i) {
+    const filter = filters[i];
+    let filterHtml;
+    if (activeFilter === filter) {
+      filterHtml = `<p id="${filter}" class="greyed-out-text cursor-pointer active-filter-item">${filter}</p>`;
+    } else {
+      filterHtml = `<p id="${filter}" class="greyed-out-text cursor-pointer filter-item">${filter}</p>`;
+    }
+
+    const filterElement = parser.parseFromString(filterHtml, 'text/xml');
+    filterElement.firstChild.addEventListener("click", () => applyFilter(filter));
+    filtersElement.appendChild(filterElement.firstChild);
+  }
 }
 
 render();
