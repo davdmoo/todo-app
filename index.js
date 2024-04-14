@@ -55,6 +55,47 @@ function applyFilter(newFilter) {
   if (activeFilter === newFilter) return;
 
   activeFilter = newFilter;
+
+  switch (activeFilter) {
+    case "Completed":
+      todos = [...allTodos.filter((todo) => {
+        return todo.isCompleted;
+      })];
+      break;
+    case "Active":
+      todos = [...allTodos.filter((todo) => {
+        return !todo.isCompleted;
+      })];
+      break;
+    default:
+      todos = [...allTodos];
+      break;
+  }
+
+  render();
+}
+
+function dragoverHandler(ev) {
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = "move";
+}
+
+const TODO_DROP_DATA = "todo-item-drop-data";
+function dropHandler(ev) {
+  ev.preventDefault();
+  const data = ev.dataTransfer.getData(TODO_DROP_DATA);
+
+  const todoToRemove = findTodoById(data);
+  const targetTodo = findTodoById(ev.target.id);
+
+  // get target's index before any removal
+  const index = allTodos.indexOf(targetTodo);
+
+  // remove the data from allTodos
+  allTodos = [...allTodos.filter((todo) => todo.id !== todoToRemove.id)];
+
+  // insert it at the target's index
+  allTodos.splice(index, 0, todoToRemove);
   render();
 }
 
@@ -73,33 +114,8 @@ function render() {
   console.log("render");
   const todoList = document.getElementById("todo-list");
 
-  // removes existing HTML in cases where we need to re-render
   todoList.innerHTML = "";
-
-  switch (activeFilter) {
-    case "Completed":
-      todos = [...allTodos.filter((todo) => {
-        return todo.isCompleted;
-      })];
-      break;
-    case "Active":
-      todos = [...allTodos.filter((todo) => {
-        return !todo.isCompleted;
-      })];
-      break;
-    default:
-      todos = [...allTodos];
-      break;
-  }
-
-  todos = [...todos.sort((a, b) => {
-    // negative value means the first element (a) will be ordered first in the list
-    if (a.isCompleted !== b.isCompleted) {
-      return a.isCompleted ? -1 : 1;
-    }
-
-    return b.id - a.id;
-  })];
+  todos = [...allTodos];
 
   for (let i = 0; i < todos.length; ++i) {
     const todo = todos[i];
@@ -119,10 +135,27 @@ function render() {
             />
           </svg>`;
 
-    let element;
+    const todoItemElement = document.createElement("div");
+    todoItemElement.classList.add("todo-item");
+    todoItemElement.id = id;
+    todoItemElement.draggable = true;
+
+    todoItemElement.addEventListener("dragstart", function (ev) {
+      ev.dataTransfer.setData(TODO_DROP_DATA, id); // id becomes string here (from number)
+      ev.dataTransfer.effectAllowed = "move";
+    });
+
+    todoItemElement.ondrop = (event) => {
+      const data = Number(event.dataTransfer.getData(TODO_DROP_DATA)); // converts id back into number
+      if (data === id) return;
+      dropHandler(event);
+    };
+
+    todoItemElement.ondragover = (event) => dragoverHandler(event);
+
     if (isCompleted) {
-      element = `<div class="todo-item" id="${id}">
-          <div class="todo-title" id="todo-title-${id}">
+      todoItemElement.innerHTML = `
+          <div class="todo-title" onclick="toggleTodo(${id}, ${!isCompleted})">
             <div class="checked-circle">
               <svg xmlns="http://www.w3.org/2000/svg" width="11" height="9">
                 <path
@@ -136,35 +169,28 @@ function render() {
             <p class="checked-todo-item">${title}</p>
           </div>
           ${deleteTodoButton}
-        </div>`;
+      `;
     } else {
-      element = `<div class="todo-item" id="${id}">
-          <div class="todo-title" id="todo-title-${id}">
+      todoItemElement.innerHTML = `
+        <div class="todo-title" onclick="toggleTodo(${id}, ${!isCompleted})">
             <div class="unchecked-circle"></div>
             <p>${title}</p>
-          </div>
-          ${deleteTodoButton}
-        </div>`;
+        </div>
+        ${deleteTodoButton}
+      `
     }
 
-    const parsedElement = parser.parseFromString(element, 'text/xml');
-
-    // couldn't add onclick dynamically using JS string (couldn't figure out why)
-    const todoTitle = parsedElement.getElementById(`todo-title-${id}`);
-    todoTitle.addEventListener("click", () => toggleTodo(id, !isCompleted));
-    todoList.appendChild(parsedElement.firstChild);
+    todoList.appendChild(todoItemElement);
   }
 
   const activeTodosCount = [...allTodos.filter((todo) => !todo.isCompleted)].length;
-  const todoCountIndicator = `<div class="todo-item">
+  const todoCountIndicator = document.createElement("div");
+  todoCountIndicator.classList.add("todo-item");
+  todoCountIndicator.innerHTML = `
     <p id="todo-count-indicator" class="greyed-out-text">${activeTodosCount} item(s) left</p>
-    <p id="clear-completed-todos" class="greyed-out-text cursor-pointer">Clear Completed</p>
-  </div>`;
-  const todoCountIndicatorElement = parser.parseFromString(todoCountIndicator, 'text/xml');
-  const clearCompletedTodosButton = todoCountIndicatorElement.getElementById("clear-completed-todos");
-  clearCompletedTodosButton.addEventListener("click", () => clearCompletedTodos());
-
-  todoList.appendChild(todoCountIndicatorElement.firstChild);
+    <p id="clear-completed-todos" class="greyed-out-text cursor-pointer" onclick="clearCompletedTodos()">Clear Completed</p>
+  `;
+  todoList.appendChild(todoCountIndicator);
 
   const filtersElement = document.getElementById("filter");
   filtersElement.innerHTML = "";
@@ -183,4 +209,34 @@ function render() {
   }
 }
 
-render();
+// sort todos based on its isCompleted value then its ID's on first render
+function firstRender() {
+  allTodos = [...allTodos.sort((a, b) => {
+    // negative value means the first element (a) will be ordered first in the list
+    if (a.isCompleted !== b.isCompleted) {
+      return a.isCompleted ? -1 : 1;
+    }
+
+    return b.id - a.id;
+  })];
+
+  switch (activeFilter) {
+    case "Completed":
+      todos = [...allTodos.filter((todo) => {
+        return todo.isCompleted;
+      })];
+      break;
+    case "Active":
+      todos = [...allTodos.filter((todo) => {
+        return !todo.isCompleted;
+      })];
+      break;
+    default:
+      todos = [...allTodos];
+      break;
+  }
+
+  render();
+}
+
+firstRender();
