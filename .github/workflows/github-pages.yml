@@ -29,6 +29,6 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: .
+          folder: ../
           git-config-name: davdmoo
           git-config-email: david.mulyawan97@gmail.com
