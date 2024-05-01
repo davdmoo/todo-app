@@ -99,23 +99,23 @@ header {
   margin-top: 32px;
 }
 
-li {
+.todo-list {
   display: flex;
   flex-direction: column;
   margin-top: 16px;
 }
 
-li .todo-item:first-child {
+.todo-list .todo-item:first-child {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
 }
 
-li .todo-item:last-child {
+.todo-list .todo-item:last-child {
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
 }
 
-li .todo-item:not(:last-child) {
+.todo-list .todo-item:not(:last-child) {
   border-bottom: solid 1px
     light-dark(var(--light-grayish-blue), var(--dark-grayish-blue-dark));
 }
