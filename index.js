@@ -8,37 +8,84 @@ let allTodos = [
     id: 2,
     title: "Read a book",
     isCompleted: true,
-  }
+  },
 ];
 let todos = [...allTodos];
 
 const filters = ["All", "Active", "Completed"];
 let activeFilter = "All";
 
-function themeToggler() {
+const isDesktop = window.matchMedia("(min-width: 600px)");
+/**
+ *
+ * @param {MediaQueryList} isDesktop
+ */
+function desktopBackgroundImage(isDesktop) {
   const body = document.getElementById("app");
-  const { classList } = body;
-  if (classList.length === 0) {
-    body.classList.add("dark");
-  } else {
-    const currentClassList = classList[0];
-    body.classList = [];
+  const backgroundImage = document.getElementById("background-image");
+  const currentTheme = body.classList[0];
 
-    let newThemeMode;
-    if (currentClassList === "dark") {
-      newThemeMode = "light";
-    } else {
-      newThemeMode = "dark";
-    }
-
-    body.classList.add(newThemeMode);
-  }
+  backgroundImage.src = isDesktop.matches
+    ? `images/bg-desktop-${currentTheme}.jpg`
+    : `images/bg-mobile-${currentTheme}.jpg`;
 }
 
+desktopBackgroundImage(isDesktop);
+
+isDesktop.addEventListener("change", function () {
+  desktopBackgroundImage(isDesktop);
+});
+
+function themeToggler() {
+  const body = document.body;
+  const currentTheme = body.classList[0];
+  const backgroundImage = document.getElementById("background-image");
+  const filter = document.getElementById("filter");
+  const todoList = document.getElementById("todo-list");
+
+  let newThemeMode;
+  if (currentTheme === "dark") {
+    newThemeMode = "light";
+
+    filter.classList.add("light-shadow");
+    todoList.classList.add("light-shadow");
+  } else {
+    newThemeMode = "dark";
+
+    filter.classList.remove("light-shadow");
+    todoList.classList.remove("light-shadow");
+  }
+
+  backgroundImage.src = isDesktop.matches
+    ? `images/bg-desktop-${newThemeMode}.jpg`
+    : `images/bg-mobile-${newThemeMode}.jpg`;
+  body.classList.remove(currentTheme);
+  body.classList.add(newThemeMode);
+}
+
+/**
+ *
+ * @param {{id: string, title: string, isCompleted: boolean}[]} newTodos
+ */
+function setTodos(newTodos) {
+  todos = [...newTodos];
+}
+
+/**
+ *
+ * @param {string} id
+ * @returns
+ */
 function findTodoById(id) {
   return allTodos.find((todo) => todo.id == id);
 }
 
+/**
+ *
+ * @param {string} id
+ * @param {boolean} value
+ * @returns
+ */
 function toggleTodo(id, value) {
   const todo = findTodoById(id);
   if (todo === undefined) return;
@@ -47,62 +94,92 @@ function toggleTodo(id, value) {
   render();
 }
 
+/**
+ *
+ * @param {string} id
+ * @returns
+ */
 function removeTodo(id) {
   const todo = findTodoById(id);
   if (todo === undefined) return;
   allTodos = [...allTodos.filter((todo) => todo.id !== id)];
+  setTodos(allTodos);
 
   render();
 }
 
 function clearCompletedTodos() {
   allTodos = [...allTodos.filter((todo) => todo.isCompleted == false)];
-  todos = [...allTodos];
+  setTodos(allTodos);
+
   render();
 }
 
+/**
+ *
+ * @param {string} title
+ */
 function createTodo(title) {
   const orderedTodos = allTodos.sort((a, b) => b.id > a.id);
 
   const newId = orderedTodos.length === 0 ? 1 : orderedTodos[0].id + 1;
   const newTodo = { id: newId, title: title, isCompleted: false };
   allTodos.push(newTodo);
-  todos = [...allTodos];
+  setTodos(allTodos);
 
   render();
 }
 
+/**
+ *
+ * @param {string} newFilter
+ * @returns
+ */
 function applyFilter(newFilter) {
   if (!filters.includes(newFilter)) return;
   if (activeFilter === newFilter) return;
 
   activeFilter = newFilter;
 
+  let filteredTodos;
   switch (activeFilter) {
     case "Completed":
-      todos = [...allTodos.filter((todo) => {
-        return todo.isCompleted;
-      })];
+      filteredTodos = [
+        ...allTodos.filter((todo) => {
+          return todo.isCompleted;
+        }),
+      ];
       break;
     case "Active":
-      todos = [...allTodos.filter((todo) => {
-        return !todo.isCompleted;
-      })];
+      filteredTodos = [
+        ...allTodos.filter((todo) => {
+          return !todo.isCompleted;
+        }),
+      ];
       break;
     default:
-      todos = [...allTodos];
+      filteredTodos = [...allTodos];
       break;
   }
 
+  setTodos(filteredTodos);
   render();
 }
 
+/**
+ *
+ * @param {DragEvent} ev
+ */
 function dragoverHandler(ev) {
   ev.preventDefault();
   ev.dataTransfer.dropEffect = "move";
 }
 
 const TODO_DROP_DATA = "todo-item-drop-data";
+/**
+ *
+ * @param {DragEvent} ev
+ */
 function dropHandler(ev) {
   ev.preventDefault();
   const data = ev.dataTransfer.getData(TODO_DROP_DATA);
@@ -118,7 +195,8 @@ function dropHandler(ev) {
 
   // insert it at the target's index
   allTodos.splice(index, 0, todoToRemove);
-  todos = [...allTodos];
+
+  setTodos(allTodos);
   render();
 }
 
@@ -134,7 +212,6 @@ todoInput.addEventListener("keydown", function (event) {
 
 const parser = new DOMParser();
 function render() {
-  console.log("render");
   const todoList = document.getElementById("todo-list");
 
   todoList.innerHTML = "";
@@ -199,13 +276,14 @@ function render() {
             <p class="unchecked-todo-title">${title}</p>
         </div>
         ${deleteTodoButton}
-      `
+      `;
     }
 
     todoList.appendChild(todoItemElement);
   }
 
-  const activeTodosCount = [...allTodos.filter((todo) => !todo.isCompleted)].length;
+  const activeTodosCount = [...allTodos.filter((todo) => !todo.isCompleted)]
+    .length;
   const todoCountIndicator = document.createElement("div");
   todoCountIndicator.classList.add("todo-item");
   todoCountIndicator.innerHTML = `
@@ -220,43 +298,62 @@ function render() {
     const filter = filters[i];
     let filterHtml;
     if (activeFilter === filter) {
-      filterHtml = `<p id="${filter}" class="greyed-out-text cursor-pointer active-filter-item">${filter}</p>`;
+      filterHtml = `<p id="${filter}" class="greyed-out-text cursor-pointer active-filter-item text-bold">${filter}</p>`;
     } else {
-      filterHtml = `<p id="${filter}" class="greyed-out-text cursor-pointer filter-item">${filter}</p>`;
+      filterHtml = `<p id="${filter}" class="greyed-out-text cursor-pointer filter-item text-bold">${filter}</p>`;
     }
 
-    const filterElement = parser.parseFromString(filterHtml, 'text/xml');
-    filterElement.firstChild.addEventListener("click", () => applyFilter(filter));
+    const filterElement = parser.parseFromString(filterHtml, "text/xml");
+    filterElement.firstChild.addEventListener("click", () =>
+      applyFilter(filter)
+    );
     filtersElement.appendChild(filterElement.firstChild);
   }
 }
 
-// sort todos based on its isCompleted value then its ID's on first render
 function firstRender() {
-  allTodos = [...allTodos.sort((a, b) => {
-    // negative value means the first element (a) will be ordered first in the list
-    if (a.isCompleted !== b.isCompleted) {
-      return a.isCompleted ? -1 : 1;
-    }
+  // sort todos based on its isCompleted value then its ID's on first render
+  allTodos = [
+    ...allTodos.sort((a, b) => {
+      // negative value means the first element (a) will be ordered first in the list
+      if (a.isCompleted !== b.isCompleted) {
+        return a.isCompleted ? -1 : 1;
+      }
 
-    return b.id - a.id;
-  })];
+      return b.id - a.id;
+    }),
+  ];
 
+  let filteredTodos;
   switch (activeFilter) {
     case "Completed":
-      todos = [...allTodos.filter((todo) => {
-        return todo.isCompleted;
-      })];
+      filteredTodos = [
+        ...allTodos.filter((todo) => {
+          return todo.isCompleted;
+        }),
+      ];
       break;
     case "Active":
-      todos = [...allTodos.filter((todo) => {
-        return !todo.isCompleted;
-      })];
+      filteredTodos = [
+        ...allTodos.filter((todo) => {
+          return !todo.isCompleted;
+        }),
+      ];
       break;
     default:
-      todos = [...allTodos];
+      filteredTodos = [...allTodos];
       break;
   }
+
+  setTodos(filteredTodos);
+
+  const body = document.getElementById("app");
+  body.classList.add("dark");
+
+  const backgroundImage = document.getElementById("background-image");
+  backgroundImage.src = isDesktop.matches
+    ? `images/bg-desktop-dark.jpg`
+    : `images/bg-mobile-dark.jpg`;
 
   render();
 }

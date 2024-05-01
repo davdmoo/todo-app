@@ -35,8 +35,13 @@
   box-sizing: border-box;
 }
 
+.text-bold {
+  font-weight: bold;
+}
+
 p {
   font-size: 16px;
+  color: light-dark(var(--dark-grayish-blue), var(--light-grayish-blue-dark));
 }
 
 .theme-toggler {
@@ -50,14 +55,32 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-top: 32px;
-  padding-bottom: 32px;
   background-color: light-dark(var(--light-bg), var(--dark-bg));
 }
 
+#background-image {
+  position: fixed;
+  width: 100%;
+  min-height: 200px;
+  max-height: 300px;
+}
+
 main {
+  width: 100%;
+  position: relative;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+header {
+  padding-top: 32px;
+  padding-bottom: 32px;
+  padding-left: 24px;
+  padding-right: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   width: 100%;
 }
 
@@ -98,7 +121,7 @@ ul .todo-item:not(:last-child) {
 }
 
 .light-shadow {
-  box-shadow: 5px 5px 5px var(--light-grayish-blue);
+  box-shadow: 0px 5px 5px var(--light-grayish-blue);
 }
 
 .todo-item {
@@ -145,7 +168,7 @@ ul .todo-item:not(:last-child) {
   height: 24px;
   width: 24px;
   border-radius: 50%;
-  border: solid 1px white;
+  border: solid 1px gray;
   margin-right: 12px;
 }
 
@@ -166,13 +189,6 @@ ul .todo-item:not(:last-child) {
     var(--light-grayish-blue-hover),
     var(--light-grayish-blue-hover)
   );
-}
-
-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
 }
 
 .filter {
@@ -216,8 +232,27 @@ footer {
   font-size: 11px;
   text-align: center;
   font-family: "Josefin Sans", Arial, Helvetica, sans-serif;
+  color: light-dark(var(--dark-grayish-blue), var(--light-grayish-blue-dark));
 }
 
 footer a {
   color: hsl(228, 45%, 44%);
+}
+
+@media (min-width: 600px) {
+  main {
+    max-width: 600px;
+  }
+
+  header {
+    max-width: 600px;
+  }
+
+  p {
+    font-size: 18px;
+  }
+
+  #input-todo {
+    font-size: 18px;
+  }
 }
