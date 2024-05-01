@@ -99,23 +99,23 @@ header {
   margin-top: 32px;
 }
 
-ul {
+li {
   display: flex;
   flex-direction: column;
   margin-top: 16px;
 }
 
-ul .todo-item:first-child {
+li .todo-item:first-child {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
 }
 
-ul .todo-item:last-child {
+li .todo-item:last-child {
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
 }
 
-ul .todo-item:not(:last-child) {
+li .todo-item:not(:last-child) {
   border-bottom: solid 1px
     light-dark(var(--light-grayish-blue), var(--dark-grayish-blue-dark));
 }
