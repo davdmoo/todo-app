@@ -18,6 +18,8 @@ jobs:
   deploy:
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -26,9 +28,8 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: ../
-          git-config-name: davdmoo
-          git-config-email: david.mulyawan97@gmail.com
+          path: "."
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
