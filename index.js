@@ -15,6 +15,26 @@ let todos = [...allTodos];
 const filters = ["All", "Active", "Completed"];
 let activeFilter = "All";
 
+function themeToggler() {
+  const body = document.getElementById("app");
+  const { classList } = body;
+  if (classList.length === 0) {
+    body.classList.add("dark");
+  } else {
+    const currentClassList = classList[0];
+    body.classList = [];
+
+    let newThemeMode;
+    if (currentClassList === "dark") {
+      newThemeMode = "light";
+    } else {
+      newThemeMode = "dark";
+    }
+
+    body.classList.add(newThemeMode);
+  }
+}
+
 function findTodoById(id) {
   return allTodos.find((todo) => todo.id == id);
 }
@@ -37,6 +57,7 @@ function removeTodo(id) {
 
 function clearCompletedTodos() {
   allTodos = [...allTodos.filter((todo) => todo.isCompleted == false)];
+  todos = [...allTodos];
   render();
 }
 
@@ -46,6 +67,7 @@ function createTodo(title) {
   const newId = orderedTodos.length === 0 ? 1 : orderedTodos[0].id + 1;
   const newTodo = { id: newId, title: title, isCompleted: false };
   allTodos.push(newTodo);
+  todos = [...allTodos];
 
   render();
 }
@@ -96,6 +118,7 @@ function dropHandler(ev) {
 
   // insert it at the target's index
   allTodos.splice(index, 0, todoToRemove);
+  todos = [...allTodos];
   render();
 }
 
@@ -115,7 +138,6 @@ function render() {
   const todoList = document.getElementById("todo-list");
 
   todoList.innerHTML = "";
-  todos = [...allTodos];
 
   for (let i = 0; i < todos.length; ++i) {
     const todo = todos[i];
@@ -174,7 +196,7 @@ function render() {
       todoItemElement.innerHTML = `
         <div class="todo-title" onclick="toggleTodo(${id}, ${!isCompleted})">
             <div class="unchecked-circle"></div>
-            <p>${title}</p>
+            <p class="unchecked-todo-title">${title}</p>
         </div>
         ${deleteTodoButton}
       `

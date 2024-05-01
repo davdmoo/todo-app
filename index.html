@@ -33,10 +33,16 @@
     </style>
   </head>
 
-  <body>
+  <body class="light" id="app">
     <header>
       <h1>TODO</h1>
-      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="26"
+        height="26"
+        class="theme-toggler"
+        onclick="themeToggler()"
+      >
         <path
           fill="#FFF"
           fill-rule="evenodd"
@@ -53,7 +59,7 @@
         placeholder="Create a new todo.."
       />
 
-      <ul class="todo-list" id="todo-list"></ul>
+      <ul class="light-shadow" id="todo-list"></ul>
 
       <div class="filter" id="filter"></div>
 

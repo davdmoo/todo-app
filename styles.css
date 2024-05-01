@@ -1,8 +1,32 @@
 :root {
   color-scheme: light dark;
-  --primary-bright-blue: hsl(220, 98%, 61%);
-  --light-background: hsl(0, 0%, 98%);
-  --dark-background: hsl(235, 21%, 11%);
+
+  --primary: hsl(220, 98%, 61%);
+  --light-bg: hsl(0, 0%, 98%);
+  --dark-bg: hsl(235, 21%, 11%);
+  --check-background: linear-gradient(hsl(192, 100%, 67%), hsl(280, 87%, 65%));
+
+  --very-light-gray: hsl(0, 0%, 98%);
+  --very-light-grayish-blue: hsl(236, 33%, 92%);
+  --light-grayish-blue: hsl(233, 11%, 84%);
+  --dark-grayish-blue: hsl(236, 9%, 61%);
+  --very-dark-grayish-blue: hsl(235, 19%, 35%);
+
+  --very-dark-blue: hsl(235, 21%, 11%);
+  --very-dark-desaturated-blue: hsl(235, 24%, 19%);
+  --light-grayish-blue-dark: hsl(234, 39%, 85%);
+  --light-grayish-blue-hover: hsl(236, 33%, 92%);
+  --dark-grayish-blue-dark: hsl(234, 11%, 52%);
+  --very-dark-grayish-blue-dark: hsl(233, 14%, 35%);
+  --very-dark-grayish-blue-dark-2: hsl(237, 14%, 26%);
+}
+
+.light {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 * {
@@ -13,6 +37,10 @@
 
 p {
   font-size: 16px;
+}
+
+.theme-toggler {
+  cursor: pointer;
 }
 
 body {
@@ -26,7 +54,7 @@ body {
   padding-right: 16px;
   padding-top: 32px;
   padding-bottom: 32px;
-  background-color: light-dark(var(--light-background), var(--dark-background));
+  background-color: light-dark(var(--light-bg), var(--dark-bg));
 }
 
 main {
@@ -36,7 +64,11 @@ main {
 #input-todo {
   width: 100%;
   padding: 24px;
-  background-color: hsl(235, 24%, 19%);
+  background-color: light-dark(
+    var(--light-bg),
+    var(--very-dark-desaturated-blue)
+  );
+  color: light-dark(var(--dark-grayish-blue), var(--dark-grayish-blue-dark));
   border: none;
   font-family: "Josefin Sans";
   font-size: 16px;
@@ -61,12 +93,20 @@ ul .todo-item:last-child {
 }
 
 ul .todo-item:not(:last-child) {
-  border-bottom: solid 1px hsl(234, 11%, 52%);
+  border-bottom: solid 1px
+    light-dark(var(--light-grayish-blue), var(--dark-grayish-blue-dark));
+}
+
+.light-shadow {
+  box-shadow: 5px 5px 5px var(--light-grayish-blue);
 }
 
 .todo-item {
   padding: 24px;
-  background-color: hsl(235, 24%, 19%);
+  background-color: light-dark(
+    var(--light-bg),
+    var(--very-dark-desaturated-blue)
+  );
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -74,7 +114,11 @@ ul .todo-item:not(:last-child) {
 
 .checked-todo-item {
   text-decoration: line-through;
-  color: hsl(234, 11%, 52%);
+  color: light-dark(var(--dark-grayish-blue), var(--dark-grayish-blue-dark));
+}
+
+.unchecked-todo-title {
+  color: light-dark(var(--very-dark-grayish-blue), var(--light-bg));
 }
 
 .todo-title {
@@ -85,7 +129,7 @@ ul .todo-item:not(:last-child) {
 }
 
 .checked-circle {
-  background: linear-gradient(hsl(192, 100%, 67%), hsl(280, 87%, 65%));
+  background: var(--check-background);
   height: 24px;
   width: 24px;
   border-radius: 50%;
@@ -110,7 +154,7 @@ ul .todo-item:not(:last-child) {
 }
 
 .greyed-out-text {
-  color: hsl(234, 11%, 52%);
+  color: light-dark(var(--dark-grayish-blue), var(--dark-grayish-blue-dark));
 }
 
 .cursor-pointer {
@@ -118,7 +162,10 @@ ul .todo-item:not(:last-child) {
 }
 
 #clear-completed-todos:hover {
-  color: hsl(236, 33%, 92%);
+  color: light-dark(
+    var(--light-grayish-blue-hover),
+    var(--light-grayish-blue-hover)
+  );
 }
 
 header {
@@ -135,11 +182,14 @@ header {
 }
 
 .filter-item:hover {
-  color: hsl(236, 33%, 92%);
+  color: light-dark(
+    var(--light-grayish-blue-hover),
+    var(--light-grayish-blue-hover)
+  );
 }
 
 .active-filter-item {
-  color: var(--primary-bright-blue);
+  color: var(--primary);
 }
 
 .item-info {
@@ -153,7 +203,10 @@ header {
   flex-direction: row;
   justify-content: space-around;
   padding: 24px;
-  background-color: hsl(235, 24%, 19%);
+  background-color: light-dark(
+    var(--light-bg),
+    var(--very-dark-desaturated-blue)
+  );
   margin-top: 16px;
 }
 
